@@ -59,13 +59,21 @@ export function ProductCard({ id, title, price, mrp, image, rating, ratingCount,
             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
             <span className="text-sm font-semibold">{rating}</span>
           </div>
-          <span className="text-xs text-muted-foreground">({ratingCount.toLocaleString()})</span>
+          <span className="text-xs text-muted-foreground" suppressHydrationWarning={true}>
+            ({ratingCount.toLocaleString()})
+          </span>
         </div>
 
         {/* Pricing */}
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-foreground">₹{price.toLocaleString()}</span>
-          {mrp > price && <span className="text-sm text-muted-foreground line-through">₹{mrp.toLocaleString()}</span>}
+          <span className="text-lg font-bold text-foreground" suppressHydrationWarning={true}>
+            ₹{price.toLocaleString()}
+          </span>
+          {mrp > price && (
+            <span className="text-sm text-muted-foreground line-through" suppressHydrationWarning={true}>
+              ₹{mrp.toLocaleString()}
+            </span>
+          )}
         </div>
 
         {/* Merchant badges */}
