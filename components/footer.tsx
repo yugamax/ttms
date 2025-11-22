@@ -1,112 +1,88 @@
+"use client"
+
 import Link from "next/link"
+import { Github, Twitter, Facebook, Linkedin } from "lucide-react"
 
 export function Footer() {
   return (
-    <footer className="bg-secondary border-t border-border mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <footer className="bg-card border-t border-border mt-12 sm:mt-16 md:mt-20">
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
           {/* Brand */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">SH</span>
-              </div>
-              <span className="font-bold text-primary text-lg">ShopHub</span>
-            </div>
-            <p className="text-sm text-muted-foreground">Shop smart, compare prices from top merchants.</p>
+          <div className="col-span-2 sm:col-span-1">
+            <h3 className="text-xl sm:text-2xl font-bold text-primary mb-2 sm:mb-3">MADshop</h3>
+            <p className="text-foreground/70 text-xs sm:text-sm">
+              Smart shopping with price tracking and exclusive deals from your favorite retailers.
+            </p>
           </div>
 
-          {/* Categories */}
+          {/* Quick Links */}
           <div>
-            <h3 className="font-semibold mb-4">Categories</h3>
-            <ul className="space-y-2 text-sm">
+            <h4 className="font-semibold text-foreground mb-3 text-sm">Quick Links</h4>
+            <ul className="space-y-2 text-xs sm:text-sm">
               <li>
-                <Link
-                  href="/category/electronics"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Electronics
+                <Link href="/products" className="text-foreground/70 hover:text-primary transition">
+                  Products
                 </Link>
               </li>
               <li>
-                <Link href="/category/fashion" className="text-muted-foreground hover:text-primary transition-colors">
-                  Fashion
+                <Link href="/products" className="text-foreground/70 hover:text-primary transition">
+                  Deals
                 </Link>
               </li>
               <li>
-                <Link href="/category/beauty" className="text-muted-foreground hover:text-primary transition-colors">
-                  Beauty
-                </Link>
-              </li>
-              <li>
-                <Link href="/category/sports" className="text-muted-foreground hover:text-primary transition-colors">
-                  Sports
+                <Link href="/about" className="text-foreground/70 hover:text-primary transition">
+                  About Us
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Company */}
+          {/* Support */}
           <div>
-            <h3 className="font-semibold mb-4">Company</h3>
-            <ul className="space-y-2 text-sm">
+            <h4 className="font-semibold text-foreground mb-3 text-sm">Support</h4>
+            <ul className="space-y-2 text-xs sm:text-sm">
               <li>
-                <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
-                  About Us
+                <Link href="#" className="text-foreground/70 hover:text-primary transition">
+                  FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="#" className="text-foreground/70 hover:text-primary transition">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-muted-foreground hover:text-primary transition-colors">
-                  Terms of Service
+                <Link href="#" className="text-foreground/70 hover:text-primary transition">
+                  Privacy
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Social */}
           <div>
-            <h3 className="font-semibold mb-4">Newsletter</h3>
-            <p className="text-sm text-muted-foreground mb-3">Get deals and updates in your inbox.</p>
-            <form className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="flex-1 px-3 py-2 text-sm rounded bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-accent text-accent-foreground text-sm rounded font-medium hover:opacity-90 transition-opacity"
-              >
-                Subscribe
-              </button>
-            </form>
+            <h4 className="font-semibold text-foreground mb-3 text-sm">Follow Us</h4>
+            <div className="flex gap-3 sm:gap-4">
+              <a href="#" className="text-foreground/70 hover:text-primary transition">
+                <Twitter size={18} />
+              </a>
+              <a href="#" className="text-foreground/70 hover:text-primary transition">
+                <Facebook size={18} />
+              </a>
+              <a href="#" className="text-foreground/70 hover:text-primary transition">
+                <Linkedin size={18} />
+              </a>
+              <a href="#" className="text-foreground/70 hover:text-primary transition">
+                <Github size={18} />
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">© 2025 ShopHub. All rights reserved.</p>
-          <div className="flex gap-6 mt-4 md:mt-0">
-            <Link href="#" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-              Twitter
-            </Link>
-            <Link href="#" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-              Facebook
-            </Link>
-            <Link href="#" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-              Instagram
-            </Link>
-          </div>
+        <div className="border-t border-border pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+          <p className="text-xs sm:text-sm text-foreground/70">© 2025 MADshop. All rights reserved.</p>
+          <p className="text-xs sm:text-sm text-foreground/70">Made with ❤️ for smarter shopping</p>
         </div>
       </div>
     </footer>

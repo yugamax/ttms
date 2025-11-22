@@ -1,90 +1,154 @@
 "use client"
 
-import Link from "next/link"
-import Image from "next/image"
-import { Heart, Star } from "lucide-react"
+import { useCart } from "@/components/cart-context"
+import { useAuth } from "@/components/auth-provider"
+import { Button } from "@/components/ui/button"
+import { Heart, ExternalLink, TrendingDown } from "lucide-react"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
-interface ProductCardProps {
+interface Product {
   id: string
-  title: string
+  name: string
   price: number
-  mrp: number
+  originalPrice?: number
   image: string
-  rating: number
-  ratingCount: number
-  merchants: Array<{ name: string; badge: string }>
+  source: "amazon" | "flipkart" | "myntra"
+  discount?: number
+  rating?: number
+  reviews?: number
+  timeLeft?: string
 }
 
-export function ProductCard({ id, title, price, mrp, image, rating, ratingCount, merchants }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false)
-  const discount = Math.round(((mrp - price) / mrp) * 100)
+export function ProductCard({ product }: { product: Product }) {
+  const { addItem } = useCart()
+  const { user } = useAuth()
+  const router = useRouter()
+  const [liked, setLiked] = useState(false)
+
+  const discount =
+    product.originalPrice && product.price
+      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      : product.discount || 0
+
+  const handleAddToCart = () => {
+    if (!user) {
+      router.push("/auth")
+      return
+    }
+
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: 1,
+      source: product.source,
+      originalPrice: product.originalPrice,
+      discount,
+    })
+  }
+
+  const handleTrackPrice = () => {
+    if (!user) {
+      router.push("/auth")
+      return
+    }
+    alert("Added to price tracking! View trends in your dashboard.")
+  }
+
+  const platformLinks: Record<string, string> = {
+    amazon: "https://amazon.in",
+    flipkart: "https://flipkart.com",
+    myntra: "https://myntra.com",
+  }
+
+  const sourceBadgeColor: Record<string, string> = {
+    amazon: "bg-yellow-500 text-black",
+    flipkart: "bg-blue-600 text-white",
+    myntra: "bg-pink-600 text-white",
+  }
+
+  const sourceName = product.source.charAt(0).toUpperCase() + product.source.slice(1)
 
   return (
-    <div className="group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-border">
-      {/* Image container */}
-      <div className="relative w-full aspect-square bg-secondary overflow-hidden">
-        <Image
-          src={image || "/placeholder.svg"}
-          alt={title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+    <div className="group bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 hover:z-10 border border-border">
+      {/* Image Container */}
+      <div className="relative w-full aspect-square bg-muted overflow-hidden">
+        <img
+          src={product.image || "/placeholder.svg?height=300&width=300&query=product"}
+          alt={product.name}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
+
+        {/* Badge */}
+        <div
+          className={`absolute top-3 right-3 ${sourceBadgeColor[product.source]} px-3 py-1 rounded-full text-xs font-bold`}
+        >
+          {sourceName}
+        </div>
+
+        {/* Discount Badge */}
         {discount > 0 && (
-          <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground px-2 py-1 rounded text-sm font-bold">
-            {discount}% OFF
+          <div className="absolute top-3 left-3 bg-accent text-white px-2 py-1 rounded-full text-xs font-bold">
+            -{discount}%
           </div>
         )}
+
+        {/* Like Button */}
         <button
-          onClick={() => setIsWishlisted(!isWishlisted)}
-          className="absolute top-3 left-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+          onClick={() => setLiked(!liked)}
+          className="absolute bottom-3 right-3 bg-white dark:bg-card rounded-full p-2 shadow-lg hover:scale-110 transition-transform opacity-0 group-hover:opacity-100"
         >
-          <Heart className={`w-5 h-5 ${isWishlisted ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
+          <Heart size={20} className={liked ? "fill-accent text-accent" : "text-foreground"} />
         </button>
       </div>
 
       {/* Content */}
-      <div className="p-3 flex flex-col gap-2">
-        {/* Title */}
-        <Link href={`/product/${id}`}>
-          <h3 className="text-sm font-semibold text-foreground line-clamp-2 hover:text-primary transition-colors">
-            {title}
-          </h3>
-        </Link>
+      <div className="p-4">
+        <h3 className="font-semibold text-foreground line-clamp-2 mb-2 text-sm">{product.name}</h3>
 
         {/* Rating */}
-        <div className="flex items-center gap-1">
-          <div className="flex items-center gap-0.5">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm font-semibold">{rating}</span>
+        {product.rating && (
+          <div className="flex items-center gap-1 mb-2">
+            <span className="text-xs font-bold text-primary">★ {product.rating}</span>
+            <span className="text-xs text-foreground/60">({product.reviews})</span>
           </div>
-          <span className="text-xs text-muted-foreground">({ratingCount.toLocaleString()})</span>
+        )}
+
+        {/* Price */}
+        <div className="flex items-baseline gap-2 mb-2">
+          <span className="text-lg font-bold text-primary">₹{product.price.toLocaleString()}</span>
+          {product.originalPrice && (
+            <span className="text-sm text-foreground/60 line-through">₹{product.originalPrice.toLocaleString()}</span>
+          )}
         </div>
 
-        {/* Pricing */}
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-foreground">₹{price.toLocaleString()}</span>
-          {mrp > price && <span className="text-sm text-muted-foreground line-through">₹{mrp.toLocaleString()}</span>}
+        <div className="mb-3 p-2 bg-muted/50 rounded text-xs text-foreground/70">
+          <p className="font-semibold text-foreground mb-1">Shop on {sourceName}</p>
+          <p className="truncate">Redirects to: {platformLinks[product.source]}</p>
         </div>
 
-        {/* Merchant badges */}
-        <div className="flex gap-2 flex-wrap">
-          {merchants.map((merchant) => (
-            <span key={merchant.name} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded font-medium">
-              {merchant.badge}
-            </span>
-          ))}
-        </div>
+        {/* Flash Sale Timer */}
+        {product.timeLeft && <div className="text-xs text-accent font-semibold mb-2">⏱️ {product.timeLeft}</div>}
 
-        {/* CTA buttons */}
-        <div className="flex gap-2 pt-2">
-          <Link
-            href={`/product/${id}`}
-            className="flex-1 bg-primary text-primary-foreground py-2 rounded font-medium text-sm hover:opacity-90 transition-opacity text-center"
+        {/* Buttons */}
+        <div className="flex gap-2">
+          <Button onClick={handleAddToCart} className="flex-1 bg-primary hover:bg-primary/90 text-white text-sm">
+            Add to Cart
+          </Button>
+          <Button onClick={handleTrackPrice} variant="outline" className="px-3 bg-transparent" title="Track price">
+            <TrendingDown size={16} />
+          </Button>
+          <a
+            href={platformLinks[product.source]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-smooth flex items-center"
+            title="View on platform"
           >
-            View Details
-          </Link>
+            <ExternalLink size={16} />
+          </a>
         </div>
       </div>
     </div>
