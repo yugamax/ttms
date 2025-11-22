@@ -18,6 +18,7 @@ interface FlashProduct {
   reviews?: number
 }
 
+export function FlashSaleCarousel() {
   const [products, setProducts] = useState<FlashProduct[]>([])
   const [timeLeft, setTimeLeft] = useState("00:30:00")
   const [loading, setLoading] = useState(true)
