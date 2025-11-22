@@ -79,18 +79,8 @@ export function FlashSaleCarousel() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="relative">
-              <div className="animate-bounce-in text-3xl">⚡</div>
-              <div className="absolute -top-2 -left-2 text-sm animate-twinkle">✨</div>
-              <div className="absolute -bottom-2 -right-2 text-sm animate-twinkle" style={{ animationDelay: "0.3s" }}>
-                ✨
-              </div>
-            </div>
-            <div className="relative overflow-hidden">
-              <h2 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient-shift">
-                Lightning Deals
-              </h2>
-            </div>
+            <div className="text-3xl text-yellow-500 drop-shadow-lg">⚡</div>
+            <h2 className="text-2xl sm:text-3xl font-black text-yellow-600 drop-shadow-xl">Lightning Deals</h2>
           </div>
 
           <div className="px-6 py-3 rounded-xl bg-card border-2 border-primary/50 flex items-center gap-3">
