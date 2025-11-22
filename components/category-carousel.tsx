@@ -66,7 +66,8 @@ interface CategoryCarouselProps {
 
     // Duplicate products for seamless loop
     const loopProducts = [...testProducts, ...testProducts]
-    const itemWidth = 220 // px, adjust to match card width
+    // Responsive item width
+    const itemWidth = typeof window !== "undefined" && window.innerWidth < 640 ? 140 : 220
     const [offset, setOffset] = useState(0)
     const [isInstant, setIsInstant] = useState(false)
 
@@ -162,7 +163,7 @@ interface CategoryCarouselProps {
               <div
                 key={`${product.id}-${idx}`}
                 style={{ minWidth: `${itemWidth}px`, maxWidth: `${itemWidth}px` }}
-                className="px-2"
+                className="px-1 sm:px-2"
               >
                 <CarouselProductCard product={product} />
               </div>

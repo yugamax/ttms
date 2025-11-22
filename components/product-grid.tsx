@@ -62,10 +62,13 @@ export default function ProductGrid({ products = [], loading }) {
             setApi={(api) => (carouselApiRef.current = api)}
             className="w-full"
           >
-            <CarouselContent className="-ml-4">
+            <CarouselContent className="-ml-2 sm:-ml-4">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product, idx) => (
-                  <CarouselItem key={product.id} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
+                  <CarouselItem
+                    key={product.id}
+                    className="pl-2 sm:pl-4 basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                  >
                     <ProductCard product={product} />
                   </CarouselItem>
                 ))

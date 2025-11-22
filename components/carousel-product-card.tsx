@@ -76,17 +76,22 @@ export function CarouselProductCard({ product }: { product: Product }) {
       onClick={handleCardClick}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      className="group bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border border-border cursor-pointer h-full flex flex-col"
+      className="group bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border border-border cursor-pointer h-full flex flex-col
+        p-2 sm:p-2 md:p-3 lg:p-4
+        w-full max-w-[180px] sm:max-w-[220px]"
       style={{
         animation: isHovering ? "pulse 0.6s ease-out" : "none",
       }}
     >
       {/* Image Container - Compact */}
-      <div className="relative w-full aspect-square bg-muted overflow-hidden">
+      <div className="relative w-full aspect-square bg-muted overflow-hidden"
+        style={{ maxHeight: "120px" }}
+      >
         <img
           src={product.image || "/placeholder.svg?height=200&width=200&query=product"}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300
+            max-h-28 sm:max-h-32 md:max-h-36 lg:max-h-40"
         />
 
         {/* Badge - Smaller */}
@@ -116,7 +121,7 @@ export function CarouselProductCard({ product }: { product: Product }) {
       </div>
 
       {/* Content - Compact */}
-      <div className="p-2 flex-1 flex flex-col card-content">
+      <div className="p-1 sm:p-2 flex-1 flex flex-col card-content">
         <h3 className="font-semibold text-foreground line-clamp-2 mb-1 text-xs">{product.name}</h3>
 
         {/* Rating */}
@@ -129,7 +134,7 @@ export function CarouselProductCard({ product }: { product: Product }) {
 
         {/* Price */}
         <div className="flex items-baseline gap-1 mb-2">
-          <span className="text-sm font-bold text-primary">₹{product.price.toLocaleString()}</span>
+          <span className="text-xs font-bold text-primary">₹{product.price.toLocaleString()}</span>
           {product.originalPrice && (
             <span className="text-xs text-foreground/60 line-through">₹{product.originalPrice.toLocaleString()}</span>
           )}
@@ -145,7 +150,7 @@ export function CarouselProductCard({ product }: { product: Product }) {
         <div className="flex gap-1 pt-1 border-t border-border/50">
           <button
             onClick={handleAddToCart}
-            className="flex-1 bg-primary hover:bg-primary text-white text-xs py-1.5 rounded font-semibold transition-smooth active:scale-95"
+            className="flex-1 bg-primary hover:bg-primary text-white text-xs py-1 rounded font-semibold transition-smooth active:scale-95"
           >
             Add
           </button>

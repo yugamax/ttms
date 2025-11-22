@@ -190,7 +190,23 @@ export async function fetchFlashSaleProducts() {
     })),
   ]
 
-  return allProducts.sort(() => Math.random() - 0.5).slice(0, 3)
+  // Ensure at least 10 products, add randoms if needed
+  let products = allProducts.sort(() => Math.random() - 0.5)
+  if (products.length < 10) {
+    const extra = Array.from({ length: 10 - products.length }, (_, i) => ({
+      id: `random-${i}`,
+      name: `Random Product ${i + 1}`,
+      price: 999 + i * 10,
+      originalPrice: 1099 + i * 10,
+      image: "https://via.placeholder.com/200x200?text=Random+Product",
+      source: ["amazon", "flipkart", "myntra"][i % 3] as "amazon" | "flipkart" | "myntra",
+      discount: 10 + i,
+      rating: 4.5,
+      reviews: 100 + i,
+    }))
+    products = [...products, ...extra]
+  }
+  return products.slice(0, 10)
 }
 
 export async function searchProducts(query: string) {

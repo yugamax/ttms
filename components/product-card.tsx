@@ -72,13 +72,22 @@ export function ProductCard({ product }: { product: Product }) {
   const sourceName = product.source.charAt(0).toUpperCase() + product.source.slice(1)
 
   return (
-    <div className="group bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 hover:z-10 border border-border">
+    <div
+      className="group bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 hover:z-10 border border-border
+      p-4 sm:p-4 md:p-4 lg:p-4
+      w-full max-w-xs
+      "
+    >
       {/* Image Container */}
-      <div className="relative w-full aspect-square bg-muted overflow-hidden">
+      <div
+        className="relative w-full aspect-square bg-muted overflow-hidden"
+        style={{ maxHeight: "180px" }}
+      >
         <img
           src={product.image || "/placeholder.svg?height=300&width=300&query=product"}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300
+            max-h-36 sm:max-h-44 md:max-h-52 lg:max-h-56"
         />
 
         {/* Badge */}
@@ -105,8 +114,8 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <h3 className="font-semibold text-foreground line-clamp-2 mb-2 text-sm">{product.name}</h3>
+      <div className="p-2 sm:p-4">
+        <h3 className="font-semibold text-foreground line-clamp-2 mb-2 text-xs sm:text-sm">{product.name}</h3>
 
         {/* Rating */}
         {product.rating && (
@@ -118,9 +127,9 @@ export function ProductCard({ product }: { product: Product }) {
 
         {/* Price */}
         <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-lg font-bold text-primary">₹{product.price.toLocaleString()}</span>
+          <span className="text-base sm:text-lg font-bold text-primary">₹{product.price.toLocaleString()}</span>
           {product.originalPrice && (
-            <span className="text-sm text-foreground/60 line-through">₹{product.originalPrice.toLocaleString()}</span>
+            <span className="text-xs sm:text-sm text-foreground/60 line-through">₹{product.originalPrice.toLocaleString()}</span>
           )}
         </div>
 
@@ -133,21 +142,21 @@ export function ProductCard({ product }: { product: Product }) {
         {product.timeLeft && <div className="text-xs text-accent font-semibold mb-2">⏱️ {product.timeLeft}</div>}
 
         {/* Buttons */}
-        <div className="flex gap-2">
-          <Button onClick={handleAddToCart} className="flex-1 bg-primary hover:bg-primary/90 text-white text-sm">
+        <div className="flex gap-1 sm:gap-2">
+          <Button onClick={handleAddToCart} className="flex-1 bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm py-1 sm:py-2">
             Add to Cart
           </Button>
-          <Button onClick={handleTrackPrice} variant="outline" className="px-3 bg-transparent" title="Track price">
-            <TrendingDown size={16} />
+          <Button onClick={handleTrackPrice} variant="outline" className="px-2 sm:px-3 bg-transparent" title="Track price">
+            <TrendingDown size={14} />
           </Button>
           <a
             href={platformLinks[product.source]}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-smooth flex items-center"
+            className="px-2 sm:px-3 py-1 sm:py-2 border border-border rounded-md hover:bg-muted transition-smooth flex items-center"
             title="View on platform"
           >
-            <ExternalLink size={16} />
+            <ExternalLink size={14} />
           </a>
         </div>
       </div>

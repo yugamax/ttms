@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import { ProductCard } from "@/components/product-card"
 import { fetchFlashSaleProducts } from "@/lib/api-service"
 import { Zap } from "lucide-react"
@@ -22,16 +22,32 @@ export function FlashSaleCarousel() {
   const [products, setProducts] = useState<FlashProduct[]>([])
   const [timeLeft, setTimeLeft] = useState("00:30:00")
   const [loading, setLoading] = useState(true)
-  const [isAutoplaying, setIsAutoplaying] = useState(true)
-  const [userInteracted, setUserInteracted] = useState(false)
-  const carouselApiRef = useRef<any>(null)
-  const autoplayTimeout = useRef<NodeJS.Timeout | null>(null)
+  const [offset, setOffset] = useState(0)
+  const [isInstant, setIsInstant] = useState(false)
+  const carouselRef = useRef<HTMLDivElement>(null)
+  const itemWidth = typeof window !== "undefined" && window.innerWidth < 640 ? 140 : 220
 
   useEffect(() => {
     const loadFlashProducts = async () => {
       try {
         const flashProducts = await fetchFlashSaleProducts()
-        setProducts(flashProducts)
+        let allProducts = flashProducts
+        // Add random products if less than 10
+        if (allProducts.length < 10) {
+          const extra = Array.from({ length: 10 - allProducts.length }, (_, i) => ({
+            id: `random-${i}`,
+            name: `Random Product ${i + 1}`,
+            price: 999 + i * 10,
+            originalPrice: 1099 + i * 10,
+            image: "https://via.placeholder.com/200x200?text=Random+Product",
+            source: ["amazon", "flipkart", "myntra"][i % 3] as "amazon" | "flipkart" | "myntra",
+            discount: 10 + i,
+            rating: 4.5,
+            reviews: 100 + i,
+          }))
+          allProducts = [...allProducts, ...extra]
+        }
+        setProducts(allProducts)
       } catch (error) {
         console.error("Error loading flash sale products:", error)
       } finally {
@@ -42,24 +58,61 @@ export function FlashSaleCarousel() {
     loadFlashProducts()
   }, [])
 
+  // Sliding animation
+  useEffect(() => {
+    if (!products.length) return
+    const loopProducts = [...products, ...products]
+    const maxOffset = (loopProducts.length / 2) * itemWidth
+    const interval = setInterval(() => {
+      setOffset((prev) => {
+        let next = prev + 0.5
+        if (next >= maxOffset) {
+          setIsInstant(true)
+          setTimeout(() => setIsInstant(false), 20)
+          return 0
+        }
+        setIsInstant(false)
+        return next
+      })
+    }, 16)
+    return () => clearInterval(interval)
+  }, [products, itemWidth])
+
+  // Navigation buttons
+  const handleNav = (type: 'prev' | 'next') => {
+    const loopProducts = [...products, ...products]
+    const maxOffset = (loopProducts.length / 2) * itemWidth
+    setOffset((prev) => {
+      if (type === 'prev') {
+        if (prev - itemWidth <= 0) {
+          setIsInstant(true)
+          setTimeout(() => setIsInstant(false), 20)
+          return maxOffset
+        }
+        return Math.max(prev - itemWidth, 0)
+      } else {
+        if (prev + itemWidth >= maxOffset) {
+          setIsInstant(true)
+          setTimeout(() => setIsInstant(false), 20)
+          return 0
+        }
+        return Math.min(prev + itemWidth, maxOffset)
+      }
+    })
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
         const [hours, minutes, seconds] = prev.split(":").map(Number)
         let totalSeconds = hours * 3600 + minutes * 60 + seconds - 1
-
-        if (totalSeconds <= 0) {
-          totalSeconds = 1800 // Reset to 30 minutes
-        }
-
+        if (totalSeconds <= 0) totalSeconds = 1800
         const h = Math.floor(totalSeconds / 3600)
         const m = Math.floor((totalSeconds % 3600) / 60)
         const s = totalSeconds % 60
-
         return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
       })
     }, 1000)
-
     return () => clearInterval(interval)
   }, [])
 
@@ -72,6 +125,9 @@ export function FlashSaleCarousel() {
       </section>
     )
   }
+
+  // Duplicate products for seamless loop
+  const loopProducts = [...products, ...products]
 
   return (
     <section className="py-10 px-4 bg-gradient-to-r from-yellow-100 via-primary/10 to-accent/10 border-y-4 border-yellow-400 relative shadow-xl">
@@ -115,40 +171,42 @@ export function FlashSaleCarousel() {
         </div>
 
         {/* Products Carousel - infinite scroll */}
-        <Carousel
-          opts={{ align: "start", loop: true }}
-          setApi={(api) => (carouselApiRef.current = api)}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-4">
-            {products.map((product, idx) => (
-              <CarouselItem key={product.id} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity rounded-lg blur-md -z-10" />
-                  <ProductCard product={product} />
-                </div>
-              </CarouselItem>
+        <div className="w-full overflow-hidden relative">
+          <div
+            ref={carouselRef}
+            className="flex"
+            style={{
+              width: `${loopProducts.length * itemWidth}px`,
+              transform: `translateX(-${offset}px)`,
+              transition: isInstant ? 'none' : 'transform 0.5s linear',
+            }}
+          >
+            {loopProducts.map((product, idx) => (
+              <div
+                key={`${product.id}-${idx}`}
+                style={{ minWidth: `${itemWidth}px`, maxWidth: `${itemWidth}px` }}
+                className="p-0 m-0"
+              >
+                <ProductCard product={product} />
+              </div>
             ))}
-          </CarouselContent>
-          <div className="hidden md:block">
-            <CarouselPrevious
-              className="ml-16 h-12 w-12 bg-card text-foreground border-2 border-border hover:bg-muted hover:border-primary/50 transition-all"
-              onClick={() => {
-                setIsAutoplaying(false)
-                setUserInteracted(true)
-                carouselApiRef.current?.scrollPrev()
-              }}
-            />
-            <CarouselNext
-              className="mr-16 h-12 w-12 bg-card text-foreground border-2 border-border hover:bg-muted hover:border-primary/50 transition-all"
-              onClick={() => {
-                setIsAutoplaying(false)
-                setUserInteracted(true)
-                carouselApiRef.current?.scrollNext()
-              }}
-            />
           </div>
-        </Carousel>
+          {/* Navigation Buttons */}
+          <button
+            className="absolute top-1/2 left-2 -translate-y-1/2 z-20 h-10 w-10 bg-card text-foreground border-2 border-border hover:bg-muted hover:border-primary/50 transition-all rounded-full"
+            onClick={() => handleNav('prev')}
+            aria-label="Previous"
+          >
+            &#8592;
+          </button>
+          <button
+            className="absolute top-1/2 right-2 -translate-y-1/2 z-20 h-10 w-10 bg-card text-foreground border-2 border-border hover:bg-muted hover:border-primary/50 transition-all rounded-full"
+            onClick={() => handleNav('next')}
+            aria-label="Next"
+          >
+            &#8594;
+          </button>
+        </div>
       </div>
     </section>
   )
