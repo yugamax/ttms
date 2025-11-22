@@ -1,7 +1,7 @@
 "use client"
 
 import { Navbar } from "@/components/navbar"
-import { ProductGrid } from "@/components/product-grid"
+import ProductGrid from "@/components/product-grid"
 import { Footer } from "@/components/footer"
 
 export default function ProductsPage() {

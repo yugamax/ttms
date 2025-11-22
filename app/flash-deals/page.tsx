@@ -1,7 +1,7 @@
 "use client"
 
 import { Navbar } from "@/components/navbar"
-import { FlashSaleSection } from "@/components/flash-sale-section"
+import { FlashSaleCarousel } from "@/components/flash-sale-section"
 import { Footer } from "@/components/footer"
 
 export default function FlashDealsPage() {
@@ -14,7 +14,7 @@ export default function FlashDealsPage() {
           <p className="text-foreground/70">Catch our hottest limited-time offers before they're gone!</p>
         </div>
       </div>
-      <FlashSaleSection />
+      <FlashSaleCarousel />
       <Footer />
     </main>
   )

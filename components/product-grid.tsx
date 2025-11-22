@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import { ProductCard } from "@/components/product-card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { fetchAmazonProducts, fetchFlipkartProducts, fetchMyntraProducts } from "@/lib/api-service"
@@ -18,9 +18,8 @@ interface Product {
   discount?: number
 }
 
-  const [products, setProducts] = useState<Product[]>([])
+export default function ProductGrid({ products = [], loading }) {
   const [activeSource, setActiveSource] = useState("all")
-  const [loading, setLoading] = useState(true)
   const carouselApiRef = useRef<any>(null)
   // Autoplay logic for infinite scrolling
   useEffect(() => {
@@ -30,63 +29,6 @@ interface Product {
     }, 1500)
     return () => clearInterval(interval)
   }, [carouselApiRef.current])
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true)
-        const [amazonProducts, flipkartProducts, myntraProducts] = await Promise.all([
-          fetchAmazonProducts(),
-          fetchFlipkartProducts(),
-          fetchMyntraProducts(),
-        ])
-
-        const allProducts: Product[] = [
-          ...amazonProducts.map((p) => ({
-            id: `amazon-${p.asin}`,
-            name: p.title,
-            price: p.price,
-            originalPrice: p.originalPrice,
-            image: p.image,
-            source: "amazon" as const,
-            rating: p.rating,
-            reviews: p.reviews,
-            discount: p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0,
-          })),
-          ...flipkartProducts.map((p) => ({
-            id: `flipkart-${p.id}`,
-            name: p.title,
-            price: p.price,
-            originalPrice: p.originalPrice,
-            image: p.image,
-            source: "flipkart" as const,
-            rating: p.rating,
-            reviews: p.reviews,
-            discount: p.discount,
-          })),
-          ...myntraProducts.map((p) => ({
-            id: `myntra-${p.id}`,
-            name: p.name,
-            price: p.price,
-            originalPrice: p.originalPrice,
-            image: p.image,
-            source: "myntra" as const,
-            rating: p.rating,
-            reviews: p.reviews,
-            discount: p.discount,
-          })),
-        ]
-
-        setProducts(allProducts)
-      } catch (error) {
-        console.error("Error loading products:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadProducts()
-  }, [])
 
   const filteredProducts = activeSource === "all" ? products : products.filter((p) => p.source === activeSource)
 

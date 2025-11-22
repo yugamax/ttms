@@ -75,17 +75,17 @@ interface CategoryCarouselProps {
     useEffect(() => {
       const interval = setInterval(() => {
         setOffset((prev) => {
-          // Move smoothly in the direction specified
           const increment = direction === 'left' ? 0.5 : -0.5;
           let next = prev + increment;
           const maxOffset = (loopProducts.length / 2) * itemWidth;
-          // If reached end, instantly reset to start
           if (direction === 'left' && next >= maxOffset) {
             setIsInstant(true);
+            setTimeout(() => setIsInstant(false), 20);
             return 0;
           }
           if (direction === 'right' && next <= 0) {
             setIsInstant(true);
+            setTimeout(() => setIsInstant(false), 20);
             return maxOffset;
           }
           setIsInstant(false);
@@ -94,6 +94,51 @@ interface CategoryCarouselProps {
       }, 16);
       return () => clearInterval(interval);
     }, effectDeps);
+
+    // Helper for navigation buttons to handle instant transition only when wrapping
+    const handleNav = (dir: 'left' | 'right', type: 'prev' | 'next') => {
+      setOffset((prev) => {
+        const maxOffset = (loopProducts.length / 2) * itemWidth;
+        let next;
+        if (dir === 'left') {
+          if (type === 'prev') {
+            // left button: move right, wrap to start if at end
+            if (prev + itemWidth >= maxOffset) {
+              setIsInstant(true);
+              setTimeout(() => setIsInstant(false), 20);
+              return 0;
+            }
+            return Math.min(prev + itemWidth, maxOffset);
+          } else {
+            // right button: move left, wrap to end if at start
+            if (prev - itemWidth <= 0) {
+              setIsInstant(true);
+              setTimeout(() => setIsInstant(false), 20);
+              return maxOffset;
+            }
+            return Math.max(prev - itemWidth, 0);
+          }
+        } else {
+          if (type === 'prev') {
+            // left button: move left, wrap to end if at start
+            if (prev - itemWidth <= 0) {
+              setIsInstant(true);
+              setTimeout(() => setIsInstant(false), 20);
+              return maxOffset;
+            }
+            return Math.max(prev - itemWidth, 0);
+          } else {
+            // right button: move right, wrap to start if at end
+            if (prev + itemWidth >= maxOffset) {
+              setIsInstant(true);
+              setTimeout(() => setIsInstant(false), 20);
+              return 0;
+            }
+            return Math.min(prev + itemWidth, maxOffset);
+          }
+        }
+      });
+    };
 
     return (
       <div className="py-6 animate-fadeInUp relative">
@@ -126,34 +171,14 @@ interface CategoryCarouselProps {
           {/* Navigation Buttons */}
           <button
             className="absolute top-1/2 left-2 -translate-y-1/2 z-20 h-10 w-10 bg-card text-foreground border-2 border-border hover:bg-muted hover:border-primary/50 transition-all rounded-full"
-            onClick={() => setOffset((prev) => {
-              const maxOffset = (loopProducts.length / 2) * itemWidth;
-              // Left button always moves opposite to flow
-              if (direction === 'left') {
-                // Flow is left, so left button moves right
-                return Math.min(prev + itemWidth, maxOffset);
-              } else {
-                // Flow is right, so left button moves left
-                return Math.max(prev - itemWidth, 0);
-              }
-            })}
+            onClick={() => handleNav(direction, 'prev')}
             aria-label="Previous"
           >
             &#8592;
           </button>
           <button
             className="absolute top-1/2 right-2 -translate-y-1/2 z-20 h-10 w-10 bg-card text-foreground border-2 border-border hover:bg-muted hover:border-primary/50 transition-all rounded-full"
-            onClick={() => setOffset((prev) => {
-              const maxOffset = (loopProducts.length / 2) * itemWidth;
-              // Right button always moves in direction of flow
-              if (direction === 'left') {
-                // Flow is left, so right button moves left
-                return Math.max(prev - itemWidth, 0);
-              } else {
-                // Flow is right, so right button moves right
-                return Math.min(prev + itemWidth, maxOffset);
-              }
-            })}
+            onClick={() => handleNav(direction, 'next')}
             aria-label="Next"
           >
             &#8594;
